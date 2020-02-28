@@ -1,0 +1,198 @@
+What Is a Reverse Proxy?
+#
+
+A reverse proxy is an intermediary proxy service which takes a client request, passes it on to one or more servers, and subsequently delivers the server’s response to the client. A common reverse proxy configuring is to put Nginx in front of an Apache web server. Using this method will allow both web servers to work together enabling each to do what they do best. Learn more about the differences between Nginx vs Apache.
+
+This post will outline the benefits of using an Nginx reverse proxy as well as how to configure one.
+
+How To Setup an Nginx Reverse proxy
+
+After vhost installation 
+
+
+step 1
+
+edit /etc/nginx/sites-available/kavi.sai.com.conf  using vim add below lines at end of the file
+
+
+server {
+    listen kavi.sai.com:80;
+    server_name  kavi.sai.com;
+    location / {
+        root /var/www/kavi.sai.com/html;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://kavi.sai.com:81;
+    }
+}
+
+
+
+vim /etc/nginx/sites-available/kavi.sai.com.conf 
+
+server {
+    listen   81;
+    server_name  server_name kavi.sai.com www.kavi.sai.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /var/www/kavi.sai.com/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
+server {
+    listen kavi.sai.com:80;
+    server_name  kavi.sai.com;
+    location / {
+        root /var/www/kavi.sai.com/html;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://kavi.sai.com:81;
+    }
+}
+
+
+check configauration file
+
+nginx -t
+
+restart nginx
+
+systemctl restart nginx
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+step2
+
+edit /etc/nginx/sites-available/kavi1.sai.com.conf  using vim add below lines at end of the file
+
+
+server {
+    listen kavi1.sai.com:80;
+    server_name  kavi1.sai.com;
+    location / {
+        root /var/www/kavi1.sai.com/html;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://kavi.sai.com:8080;
+    }
+}
+
+
+
+vim /etc/nginx/sites-available/kavi.sai.com.conf 
+
+server {
+    listen   8080;
+    server_name  server_name kavi.sai.com www.kavi.sai.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /var/www/kavi.sai.com/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
+server {
+    listen kavi1.sai.com:80;
+    server_name  kavi1.sai.com;
+    location / {
+        root /var/www/kavi1sai.com/html;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://kavi1.sai.com:8080
+    }
+}
+
+
+check configauration file
+
+nginx -t
+
+restart nginx
+
+systemctl restart nginx
+
+check browser both redirected to 80
+
+kavi.sai.com
+
+kavi1.sai.com 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,319 @@
+install nginx in centos 7
+
+yum install epel-release -y
+yum update -y
+yum install nginx -y
+systemct start nginx
+systemctl enable nginx
+
+nginx -v
+
+netstat -tulpn | grep 80
+-------------------------------------------------------------------------------------------------------------------------------------
+take backup default conf and unlink default.conf
+
+cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak-
+
+
+nginx vhost installation
+
+step 1:  create directory
+
+sudo mkdir -p /var/www/kavi.sai.com/html
+sudo mkdir -p /var/www/kavi1.sai.com/html
+
+Give permission to particular directory
+
+sudo chown -R $USER:$USER /var/www/kavi.sai.com/html
+sudo chown -R $USER:$USER /var/www/kavi1.sai.com/html
+
+change permission to web directory
+
+sudo chmod -R 755 /var/www
+
+
+step2 : create demo page for each website
+
+vim /var/www/kavi.sai.com/html/index.html
+
+<html>
+  <head>
+    <title>Welcome to vhost1!</title>
+  </head>
+  <body>
+    <h1>Success! The vhost1 server block is working!</h1>
+  </body>
+</html>
+
+
+
+copy that file to second website
+
+
+cp /var/www/kavi.sai.com/html/index.html /var/www/kavi.sai.com/html/index.html
+
+
+vim /var/www/kavi1.sai.com/html/index.html
+
+<html>
+  <head>
+    <title>Welcome to vhost2!</title>
+  </head>
+  <body>
+    <h1>Success! The vhost2 server block is working!</h1>
+  </body>
+</html>
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+step3 : create new server block
+
+sudo mkdir /etc/nginx/sites-available
+sudo mkdir /etc/nginx/sites-enabled
+
+
+
+
+
+vim /etc/nginx/nginx.conf
+
+changes to be made in nginx
+
+comment out the user nginx
+add include /etc/nginx/sites-available/*.conf; at end of the http section
+
+change listening port to 81
+
+server {
+    listen   81;
+    server_name  server_name kavi.sai.com www.kavi.sai.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /var/www/kavi.sai.com/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+create first server block
+
+cp /etc/nginx/conf.d/default.conf /etc/nginx/sites-available/kavi.sai.com.conf
+
+unlink /etc/nginx/conf.d/default.conf
+
+
+vim /etc/nginx/sites-available/kavi.sai.com.conf
+
+
+server {
+    listen   81;
+    server_name  server_name kavi.sai.com www.kavi.sai.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /var/www/kavi.sai.com/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+
+
+copy the configuration file to second server
+
+cp /etc/nginx/sites-available/kavi.sai.com.conf /etc/nginx/sites-available/kavi1.sai.com.conf
+
+
+
+
+change server listen port 8080
+
+add document root /var/www/kavi1.sai.com/html
+
+vim /etc/nginx/sites-available/kavi1.sai.com.conf
+
+server {
+    listen    8080;
+    server_name  server_name kavi1.sai.com www.kavi1.sai.com;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / {
+        root   /var/www/kavi1.sai.com/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ =404;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ {
+    #    proxy_pass   http://127.0.0.1;
+    #}
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ {
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #}
+
+    # deny access to .htaccess files, if Apache's document root
+    # concurs with nginx's one
+    #
+    #location ~ /\.ht {
+    #    deny  all;
+    #}
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+step 4: enable new server block
+
+sudo ln -s /etc/nginx/sites-available/example.com.conf /etc/nginx/sites-enabled/example.com.conf
+sudo ln -s /etc/nginx/sites-available/example2.com.conf /etc/nginx/sites-enabled/example2.com.conf
+
+
+take backup unlink default configuration file
+
+unlink /etc/nginx/conf.d/default.conf
+
+
+edit nginx configuration file
+
+uncomment nginx user
+
+include /etc/nginx/sites-avilable/*.conf in inside http section
+
+
+vim /etc/nginx/nginx.conf
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ip based virtual host
+
+split ethernet with diffrent ip
+
+ifconfig enp0s3:1 192.168.5.23
+
+edit 
+
+vim /etc/nginx/sites-avilable/kavi.sai.com
+
+change listen 80 to
+
+    192.168.5.20:80;
+
+vim /etc/nginx/sites-avilable/kavi1.sai.com
+
+change listen 80 to
+
+    192.168.5.23:80;
+
+
+change /etc/hosts
+
+restart nginx
+
+check ip in browser
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+

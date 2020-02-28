@@ -1,0 +1,119 @@
+How to configure Nginx Load Balancer in CentOS
+
+vim /etc/hosts 192.168.5.25
+
+Prerequisites
+192.168.5.25 proxy.loabalancer.com
+
+192.168.5.20 webserver1.sai.com
+192.168.5.21 webserver2.sai.com
+
+WebServer 1: 192.168.5.20
+
+vim /etc/hosts
+192.168.5.20 webserver1.sai.com
+
+
+WebServer 2:192.168.5.21
+
+vim /etc/hosts
+192.168.5.20 webserver1.sai.com
+
+
+Installation of Nginx
+
+Run the below command to install epel repository.
+
+#yum install epel-release -y
+
+Now its time to install the Nginx as shown below,
+#yum install nginx -y
+
+To configure Load Balancer in Nginx
+
+Configure the load balancer, once the Nginx is installed successfully.
+
+systemctl stop firewalld
+
+disable selinux
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+step2
+
+edit /etc/nginx/nginx.conf add below lines
+
+events{
+     worker_connections  1024
+}
+
+http{
+upstream webserver {
+        server 192.168.5.20:8080;
+        server 192.168.5.21:81;
+        server 192.168.5.23 backup;
+    }
+
+         server {
+            location / {
+               proxy_pass http://webserver;
+        }
+    }
+}
+
+
+
+
+vim /etc/nginx/nginx.conf
+
+#user  nginx;
+#worker_processes  1;
+
+#error_log  /var/log/nginx/error.log warn;
+#pid        /var/run/nginx.pid;
+
+
+#events {
+ #   worker_connections  1024;
+#}
+
+
+#http {
+#    include       /etc/nginx/mime.types;
+#    default_type  application/octet-stream;
+
+#    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+#                      '$status $body_bytes_sent "$http_referer" '
+#                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+#    access_log  /var/log/nginx/access.log  main;
+
+#    sendfile        on;
+    #tcp_nopush     on;
+
+ #   keepalive_timeout  65;
+
+    #gzip  on;
+
+#    include /etc/nginx/sites-available/*.conf;
+
+
+ #      server_names_hash_bucket_size 64;
+ #
+events{
+     worker_connections  1024
+}
+
+http{
+upstream webserver {
+        server 192.168.42.243:8080;
+        server 192.168.42.243:81;
+        server 192.168.42.24 backup;
+    }
+
+         server {
+            location / {
+               proxy_pass http://webserver;
+        }
+    }
+}
+#}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
