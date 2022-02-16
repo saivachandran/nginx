@@ -22,7 +22,7 @@ location / {
 
 unlink /etc/nginx/sites-available/default
 
-cd /etc/nginx/sites-available/
+cd /etc/nginx/sites-available/sonarqube.conf
 
 touch sonarqube.conf
 
@@ -49,6 +49,8 @@ location / {
 }
 
 save and exit
+
+ln -s /etc/nginx/sites-available/sonarqube.conf /etc/nginx/sites-enabled/sonarqube.conf
 
 sudo nginx -t
 
