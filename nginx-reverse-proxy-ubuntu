@@ -3,7 +3,7 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
     ssl_certificate /etc/nginx/ssl/public.crt;
-    ssl_certificate_key  /etc/nginx/ssl/private.key;
+    ssl_certificate_key  /etc/nginx/ssl/private.key;http://3.111.216.194/
     server_name compvisionminio.eastus.cloudapp.azure.com;
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
