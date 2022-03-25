@@ -20,7 +20,7 @@ location / {
 }
 # stpes
 
-unlink /etc/nginx/sites-available/default
+ unlink /etc/nginx/sites-enabled/default
 
 cd /etc/nginx/sites-available/
 
