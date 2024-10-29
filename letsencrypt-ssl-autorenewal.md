@@ -1,21 +1,29 @@
 ```
 sudo apt update
 sudo apt install certbot python3-certbot-nginx -y
-
+```
+```
 Test Manual Renewal
 
+sudo certbot renew --dry-run
+```
 
 
 Set Up a Cron Job for Auto-Renewal
+```
 sudo crontab -e
+
 0 0,12 * * * /usr/bin/certbot renew --quiet --nginx
+```
 
 
+```
 sudo certbot certonly --nginx -d web.goodtogostore.com
+```
 
 
 Verify Renewal and Reloading
-
+```
 sudo certbot renew --quiet --nginx
 ```
 
